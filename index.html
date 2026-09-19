@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>NeCuts Mobile Barbering | We Come To You</title>
+<title>NeCutz Mobile Barbering | We Come To You</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -229,7 +229,7 @@
 
 <div class="hero">
   <div class="mark">MASSACHUSETTS · MOBILE BARBERING</div>
-  <h1>NeCuts</h1>
+  <h1>NeCutz</h1>
   <p>Sharp, personal cuts — we bring the chair to your door.</p>
 </div>
 
@@ -275,7 +275,6 @@
       <label for="guest-date">Preferred date</label>
       <select id="guest-date" name="date" required>
         <option value="" disabled selected>Select a date...</option>
-        <!-- JavaScript will fill this in automatically -->
       </select>
 
       <label for="guest-time">Preferred time</label>
@@ -299,7 +298,6 @@
         <option value="6:30 PM">6:30 PM</option>
         <option value="7:00 PM">7:00 PM</option>
       </select>
-
 
       <div class="price-hint" style="color:var(--parchment-dim);">A $15 non-refundable deposit is required to hold your appointment — applied toward your total.</div>
 
@@ -334,7 +332,7 @@
     <div class="plan-row"><div class="top"><div class="name">Bi-Weekly Membership</div><div class="amount">−$10</div></div><div class="save">$10 off every cut, every visit</div></div>
 
     <div style="margin-top:22px;">
-      <form id="memberForm" action="https://formspree.io/f/https://formspree.io/f/xdekaeow" method="POST">
+      <form id="memberForm" action="https://formspree.io/f/xdekaeow" method="POST">
         <input type="hidden" name="_cc" value="your-business-email@example.com">
         <input type="hidden" name="_subject" value="New NeCuts membership signup">
 
@@ -419,22 +417,24 @@
     </div>
   </div>
 
-  <p class="footer-note">© 2026 NeCuts Mobile Barbering. Serving Massachusetts.</p>
+  <p class="footer-note">© 2026 NeCutz Mobile Barbering. Serving Massachusetts.</p>
 </div>
 
 <script>
-  / Automatically fill the date dropdown with M/W/F only
+  // Fill the date dropdown with the next several Mondays, Wednesdays,
+  // and Fridays automatically, starting from today.
   function populateDates() {
     const dateSelect = document.getElementById('guest-date');
+    if (!dateSelect) return;
     const today = new Date();
     let daysAdded = 0;
-    for (let i = 0; daysAdded < 12; i++) { // Shows the next 12 available M/W/F dates
-      let d = new Date(today);
+    for (let i = 0; daysAdded < 12; i++) {
+      const d = new Date(today);
       d.setDate(today.getDate() + i);
-      let dayOfWeek = d.getDay(); // 1 = Monday, 3 = Wednesday, 5 = Friday
+      const dayOfWeek = d.getDay(); // 1 = Monday, 3 = Wednesday, 5 = Friday
       if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) {
-        let option = document.createElement('option');
-        let dateString = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        const option = document.createElement('option');
+        const dateString = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
         option.value = dateString;
         option.textContent = dateString;
         dateSelect.appendChild(option);
@@ -442,18 +442,25 @@
       }
     }
   }
-  window.addEventListener('DOMContentLoaded', populateDtes);
-  function formatDateTime(value){
-    if(!value) return '—';
-    const d = new Date(value);
-    if(isNaN(d)) return value;
-    return d.toLocaleDateString('en-US', { month:'short', day:'numeric' }) + ' at ' +
-           d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
-  }
 
-  const STRIPE_DEPOSIT_LINK = 'https://buy.stripe.com/test_6oU8wP5lGbt63Sa8OpeIw01';
+  // ---- Stripe deposit configuration ----
+  // Replace this with your real Stripe Payment Link (Stripe Dashboard ->
+  // Payment Links -> create a $15 product called something like
+  // "Non-Refundable Booking Deposit" -> copy the link). In that Payment
+  // Link's settings, under "After payment", choose "Don't show
+  // confirmation page" and set the redirect URL to this site's address
+  // with ?paid=booking appended, e.g.:
+  //   https://necutsmobilebarbering.com/?paid=booking
+  // NOTE on "non-refundable": Stripe does not automatically enforce a
+  // no-refund policy -- it only processes the charge. Making a deposit
+  // non-refundable is a business policy you enforce yourself (i.e. you
+  // simply don't click "Refund" in your Stripe dashboard for no-shows).
+  const STRIPE_DEPOSIT_LINK = 'https://buy.stripe.com/REPLACE_WITH_YOUR_LINK';
 
   function silentlySubmitToFormspree(form){
+    // Best-effort background send; does not block the redirect to Stripe.
+    // NOTE: replace the _cc hidden field's placeholder email in both
+    // forms with your real business email before this delivers a CC.
     try{
       fetch(form.action, {
         method: 'POST',
@@ -463,6 +470,47 @@
     }catch(e){}
   }
 
+  // ---- Shared loyalty stamp tracking ----
+  // Stored per-device, keyed by the email entered. Every booking (guest
+  // or member) adds a stamp; on the 4th booking the counter resets and
+  // that visit is marked free. This is a best-effort, browser-only
+  // counter -- it will not sync across devices or survive a cleared
+  // browser, since this page has no backend/database behind it.
+  function getStampCount(email){
+    const key = 'necuts_stamps_' + (email || '').trim().toLowerCase();
+    return parseInt(localStorage.getItem(key) || '0', 10);
+  }
+  function addStamp(email){
+    const key = 'necuts_stamps_' + (email || '').trim().toLowerCase();
+    let count = getStampCount(email) + 1;
+    let freeEarned = false;
+    if(count >= 4){ count = 0; freeEarned = true; }
+    localStorage.setItem(key, String(count));
+    return { count, freeEarned };
+  }
+  function renderStamps(containerId, noteId, count, freeEarned){
+    const container = document.getElementById(containerId);
+    const note = document.getElementById(noteId);
+    if(!container) return;
+    container.innerHTML = '';
+    for(let i = 1; i <= 3; i++){
+      const div = document.createElement('div');
+      div.className = 'stamp' + (i <= count ? ' filled' : '');
+      div.textContent = i <= count ? '✂' : i;
+      container.appendChild(div);
+    }
+    const freeDiv = document.createElement('div');
+    freeDiv.className = 'stamp free';
+    freeDiv.textContent = '★';
+    container.appendChild(freeDiv);
+    if(note){
+      note.textContent = freeEarned
+        ? 'You just earned your free cut — it will be applied automatically on your next visit!'
+        : 'Every booking earns a stamp. ' + count + ' of 3 collected — collect 3 and your next cut is free.';
+    }
+  }
+
+  // ---- Guest booking flow ----
   const bookingForm = document.getElementById('bookingForm');
   bookingForm.addEventListener('submit', function(e){
     e.preventDefault();
@@ -472,14 +520,19 @@
     const date = document.getElementById('guest-date').value;
     const time = document.getElementById('guest-time').value;
     const dt = date + ' at ' + time;
-
     const phone = document.getElementById('guest-phone').value;
 
+    // Stop here with a clear message if the Stripe link hasn't been set up yet,
+    // instead of silently redirecting to a broken URL.
     if(!STRIPE_DEPOSIT_LINK || STRIPE_DEPOSIT_LINK.indexOf('REPLACE_WITH_YOUR_LINK') !== -1){
       alert('Booking isn\'t fully set up yet: the Stripe deposit link still needs to be added by the site owner. No payment has been taken.');
       return;
     }
 
+    // Save the booking details so we can show the confirmation screen
+    // once the customer returns from paying their deposit on Stripe.
+    // Wrapped in try/catch: some browsers block sessionStorage when a
+    // page is opened directly from disk (file://) rather than hosted.
     try{
       sessionStorage.setItem('necuts_pending_booking', JSON.stringify({
         name, email, service, dt, phone
@@ -489,26 +542,31 @@
       return;
     }
 
+    // Record the attempt in your inbox even if they abandon payment.
     silentlySubmitToFormspree(bookingForm);
 
+    // Send them to Stripe to pay the deposit. prefilled_email and
+    // client_reference_id help you match the Stripe payment back to
+    // this booking in your Stripe dashboard.
     const stripeUrl = STRIPE_DEPOSIT_LINK
       + '?prefilled_email=' + encodeURIComponent(email)
       + '&client_reference_id=' + encodeURIComponent(name + ' | ' + service + ' | ' + dt);
     window.location.href = stripeUrl;
   });
 
+  // ---- Handle return from Stripe after a successful deposit ----
   function checkStripeReturn(){
     const params = new URLSearchParams(window.location.search);
     if(params.get('paid') !== 'booking') return;
 
     let raw;
     try{ raw = sessionStorage.getItem('necuts_pending_booking'); }catch(err){ return; }
-    if(!raw) return;
+    if(!raw) return; // nothing to show (e.g. page reloaded after the fact)
     const booking = JSON.parse(raw);
 
     document.getElementById('bc-heading').textContent = 'You\'re booked, ' + booking.name.split(' ')[0] + '!';
     document.getElementById('bc-service').textContent = booking.service;
-    document.getElementById('bc-datetime').textContent = formatDateTime(booking.dt);
+    document.getElementById('bc-datetime').textContent = booking.dt; // already a readable "date at time" string
     document.getElementById('bc-contact').textContent = booking.phone;
 
     const { count, freeEarned } = addStamp(booking.email);
@@ -519,10 +577,56 @@
     document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
 
     try{ sessionStorage.removeItem('necuts_pending_booking'); }catch(err){}
+    // Clean the URL so refreshing the page doesn't re-trigger this.
     history.replaceState(null, '', window.location.pathname);
   }
-  checkStripeReturn();
 
+  // ---- Membership flow ----
+  const memberFrequency = document.getElementById('member-frequency');
+  const memberService = document.getElementById('member-service');
+  const memberHint = document.getElementById('member-price-hint');
+
+  function updateMemberPriceHint(){
+    const freqOpt = memberFrequency.options[memberFrequency.selectedIndex];
+    const serviceOpt = memberService.options[memberService.selectedIndex];
+    const discount = freqOpt && freqOpt.dataset.discount ? parseInt(freqOpt.dataset.discount, 10) : null;
+    const base = serviceOpt && serviceOpt.dataset.base ? parseInt(serviceOpt.dataset.base, 10) : null;
+    if(discount != null && base != null){
+      memberHint.textContent = 'Your rate: $' + (base - discount) + ' per cut (was $' + base + ')';
+    } else {
+      memberHint.textContent = '';
+    }
+  }
+  memberFrequency.addEventListener('change', updateMemberPriceHint);
+  memberService.addEventListener('change', updateMemberPriceHint);
+
+  const memberForm = document.getElementById('memberForm');
+  memberForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('member-name').value.trim() || 'there';
+    const email = document.getElementById('member-email').value;
+    const freqOpt = memberFrequency.options[memberFrequency.selectedIndex];
+    const serviceOpt = memberService.options[memberService.selectedIndex];
+    const discount = freqOpt && freqOpt.dataset.discount ? parseInt(freqOpt.dataset.discount, 10) : 0;
+    const base = serviceOpt && serviceOpt.dataset.base ? parseInt(serviceOpt.dataset.base, 10) : 0;
+    const rate = base ? ('$' + (base - discount) + '/cut') : '';
+
+    document.getElementById('mc-heading').textContent = 'Welcome to the club, ' + name.split(' ')[0] + '!';
+    document.getElementById('mc-plan-badge').textContent = (freqOpt.value || 'Member') + ' — ' + (serviceOpt.value || '') + ' ' + rate;
+
+    const { count, freeEarned } = addStamp(email);
+    renderStamps('mc-stamps', 'mc-stamp-note', count, freeEarned);
+
+    silentlySubmitToFormspree(memberForm);
+    memberForm.classList.add('hidden-after-submit');
+    document.getElementById('memberConfirm').classList.add('active');
+  });
+
+  // ---- Initialize on page load ----
+  window.addEventListener('DOMContentLoaded', function(){
+    populateDates();
+    checkStripeReturn();
+  });
 </script>
 
 </body>
