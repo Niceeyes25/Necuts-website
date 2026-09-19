@@ -272,8 +272,34 @@
         <option value="Buzz Cut" data-price="$30">Buzz Cut — $30</option>
       </select>
 
-      <label for="guest-date">Preferred date & time</label>
-      <input type="datetime-local" id="guest-date" name="datetime" required>
+      <label for="guest-date">Preferred date</label>
+      <select id="guest-date" name="date" required>
+        <option value="" disabled selected>Select a date...</option>
+        <!-- JavaScript will fill this in automatically -->
+      </select>
+
+      <label for="guest-time">Preferred time</label>
+      <select id="guest-time" name="time" required>
+        <option value="" disabled selected>Select a time...</option>
+        <option value="11:00 AM">11:00 AM</option>
+        <option value="11:30 AM">11:30 AM</option>
+        <option value="12:00 PM">12:00 PM</option>
+        <option value="12:30 PM">12:30 PM</option>
+        <option value="1:00 PM">1:00 PM</option>
+        <option value="1:30 PM">1:30 PM</option>
+        <option value="2:00 PM">2:00 PM</option>
+        <option value="2:30 PM">2:30 PM</option>
+        <option value="3:00 PM">3:00 PM</option>
+        <option value="3:30 PM">3:30 PM</option>
+        <option value="4:00 PM">4:00 PM</option>
+        <option value="4:30 PM">4:30 PM</option>
+        <option value="5:00 PM">5:00 PM</option>
+        <option value="5:30 PM">5:30 PM</option>
+        <option value="6:00 PM">6:00 PM</option>
+        <option value="6:30 PM">6:30 PM</option>
+        <option value="7:00 PM">7:00 PM</option>
+      </select>
+
 
       <div class="price-hint" style="color:var(--parchment-dim);">A $15 non-refundable deposit is required to hold your appointment — applied toward your total.</div>
 
@@ -397,6 +423,26 @@
 </div>
 
 <script>
+  / Automatically fill the date dropdown with M/W/F only
+  function populateDates() {
+    const dateSelect = document.getElementById('guest-date');
+    const today = new Date();
+    let daysAdded = 0;
+    for (let i = 0; daysAdded < 12; i++) { // Shows the next 12 available M/W/F dates
+      let d = new Date(today);
+      d.setDate(today.getDate() + i);
+      let dayOfWeek = d.getDay(); // 1 = Monday, 3 = Wednesday, 5 = Friday
+      if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) {
+        let option = document.createElement('option');
+        let dateString = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        option.value = dateString;
+        option.textContent = dateString;
+        dateSelect.appendChild(option);
+        daysAdded++;
+      }
+    }
+  }
+  populateDates();
   function formatDateTime(value){
     if(!value) return '—';
     const d = new Date(value);
@@ -423,7 +469,10 @@
     const name = document.getElementById('guest-name').value.trim() || 'there';
     const email = document.getElementById('guest-email').value;
     const service = document.getElementById('guest-service').value || '—';
-    const dt = document.getElementById('guest-date').value;
+    const date = document.getElementById('guest-date').value;
+    const time = document.getElementById('guest-time').value;
+    const dt = date + ' at ' + time;
+
     const phone = document.getElementById('guest-phone').value;
 
     if(!STRIPE_DEPOSIT_LINK || STRIPE_DEPOSIT_LINK.indexOf('REPLACE_WITH_YOUR_LINK') !== -1){
