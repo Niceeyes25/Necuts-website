@@ -91,16 +91,27 @@
     <div class="price-row"><div class="name">Buzz Cut <small>all ages, one flat rate</small></div><div class="amount">$30</div></div>
   </div>
 
-  <div class="card" id="booking">
+<div class="card" id="booking">
     <h2>Book a cut</h2>
-    <div class="sub">Book your appointment and pay your $15 deposit to lock it in.</div>
+    <div class="sub">Choose the option that fits you best.</div>
 
-    <div class="booking-cta" id="bookingLaunch">
-      <p>Tap below to fill out your booking. After you submit, you'll be asked to pay a $15 non-refundable deposit to secure your spot.</p>
-      <a href="https://tally.so/r/ODRyY7" class="btn-link">Book My Cut Now</a>
+    <!-- OPTION 1: NEW CLIENTS -->
+    <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--line);">
+      <h3 style="font-size: 18px; margin-bottom: 10px; color: var(--parchment);">New Client</h3>
+      <p style="font-size: 14px; color: var(--parchment-dim); margin-bottom: 15px;">First time with NeCutz? Sign the consent form below, then pick your time.</p>
+      
+      <iframe data-tally-src="https://tally.so/embed/ODRyY7?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="450" frameborder="0" marginheight="0" marginwidth="0" title="Client Consent"></iframe>
     </div>
 
-    <div class="confirm" id="bookingConfirm">
+    <!-- OPTION 2: RETURNING CLIENTS -->
+    <div>
+      <h3 style="font-size: 18px; margin-bottom: 10px; color: var(--parchment);">Returning Client</h3>
+      <p style="font-size: 14px; color: var(--parchment-dim); margin-bottom: 15px;">Already signed your consent form? Skip straight to booking.</p>
+      <a href="YOUR_CALENDLY_LINK_HERE" class="btn-link">Book My Time Slot</a>
+    </div>
+
+    <!-- CONFIRMATION SCREEN (POPS UP AFTER STRIPE PAYMENT) -->
+    <div class="confirm" id="bookingConfirm" style="margin-top: 30px;">
       <div class="stamp-icon">✂</div>
       <h3>You're booked!</h3>
       <div class="lead">We've received your deposit and your booking is confirmed. You'll get a text to confirm your address before your appointment.</div>
