@@ -79,7 +79,7 @@
   <div class="mark">MASSACHUSETTS · MOBILE BARBERING</div>
   <h1>NeCutz</h1>
   <p>Sharp, personal cuts — we bring the chair to your door.</p>
-  <a href="YOUR_CALENDLY_LINK_HERE" class="hero-cta">Book My Cut Now</a>
+  <a href="https://calendly.com/necutzthebarber/30min" class="hero-cta">Book My Cut Now</a>
 </div>
 <div class="wrap">
   <div class="card" id="pricing">
@@ -96,7 +96,7 @@
     <h2>Book a cut</h2>
     <div class="sub">Pick your time, sign the consent form, and pay your $15 deposit to lock it in.</div>
 
-    <a href="YOUR_CALENDLY_LINK_HERE" class="btn-link" target="_blank">Book My Cut Now</a>
+    <a href="https://calendly.com/necutzthebarber/30min" class="btn-link" target="_blank">Book My Cut Now</a>
 
     <!-- CONFIRMATION SCREEN (POPS UP AFTER STRIPE PAYMENT) -->
     <div class="confirm" id="bookingConfirm" style="margin-top: 30px;">
@@ -137,7 +137,7 @@
     </div>
     <div class="event-row">
       <div class="event-date">NOV<br>05</div>
-      <div class="event-info"><h3>Massachusetts Barber Expo</h3><p>DCU Center · All day</p></div>
+      <div class="event-info"><h3>Worcester Barber Expo</h3><p>DCU Center · All day</p></div>
     </div>
   </div>
 
@@ -155,7 +155,7 @@
 </div>
 
 <script>
-  // If the URL has ?paid=booking, hide the booking button and show the confirmation screen.
+  // If the URL has ?paid=booking, show the confirmation screen.
   window.addEventListener('DOMContentLoaded', function(){
     const params = new URLSearchParams(window.location.search);
     if (params.get('paid') === 'booking') {
