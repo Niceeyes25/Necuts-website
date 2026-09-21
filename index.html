@@ -24,6 +24,8 @@
   .hero .mark{ font-size:12px; letter-spacing:0.22em; color:var(--brass-bright); font-weight:600; margin-bottom:14px; }
   .hero h1{ font-size:44px; font-weight:800; letter-spacing:-0.01em; color:var(--parchment); margin-bottom:10px; }
   .hero p{ font-size:15px; color:var(--parchment-dim); max-width:320px; margin:0 auto; }
+  .hero-cta{ display:inline-block; margin-top:24px; padding:18px 40px; background:var(--brass); color:var(--ink); border-radius:3px; font-size:15px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; text-decoration:none; transition:background .2s; }
+  .hero-cta:hover{ background:var(--brass-bright); }
   .wrap{ max-width:600px; margin:0 auto; padding: 30px 20px 10px; }
   .card{ background:var(--charcoal); border:1px solid var(--line); border-left:2px solid var(--brass); border-radius: var(--radius); padding:28px 24px; margin-bottom:26px; scroll-margin-top:80px; }
   .card h2{ font-size:22px; font-weight:600; color:var(--parchment); margin-bottom:6px; }
@@ -63,8 +65,6 @@
   .social-btn{ background:var(--charcoal-2); border:1px solid var(--line); color:var(--parchment); text-decoration:none; text-align:center; padding:20px 10px; border-radius:3px; font-weight:600; font-size:14px; display:flex; flex-direction:column; align-items:center; gap:9px; transition:border-color .2s; }
   .social-btn:hover{ border-color:var(--brass); }
   .footer-note{ text-align:center; font-size:11.5px; color:var(--parchment-dim); margin-top:36px; padding-bottom:34px; letter-spacing:0.02em; }
-  .booking-cta{ text-align: center; padding: 10px 0 20px; }
-  .booking-cta p{ font-size:15px; color:var(--parchment-dim); margin-bottom:22px; }
 </style>
 </head>
 <body>
@@ -79,6 +79,7 @@
   <div class="mark">MASSACHUSETTS · MOBILE BARBERING</div>
   <h1>NeCutz</h1>
   <p>Sharp, personal cuts — we bring the chair to your door.</p>
+  <a href="YOUR_CALENDLY_LINK_HERE" class="hero-cta">Book My Cut Now</a>
 </div>
 <div class="wrap">
   <div class="card" id="pricing">
@@ -91,24 +92,11 @@
     <div class="price-row"><div class="name">Buzz Cut <small>all ages, one flat rate</small></div><div class="amount">$30</div></div>
   </div>
 
-<div class="card" id="booking">
+  <div class="card" id="booking">
     <h2>Book a cut</h2>
-    <div class="sub">Choose the option that fits you best.</div>
+    <div class="sub">Pick your time, sign the consent form, and pay your $15 deposit to lock it in.</div>
 
-    <!-- OPTION 1: NEW CLIENTS -->
-    <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--line);">
-      <h3 style="font-size: 18px; margin-bottom: 10px; color: var(--parchment);">New Client</h3>
-      <p style="font-size: 14px; color: var(--parchment-dim); margin-bottom: 15px;">First time with NeCutz? Sign the consent form below, then pick your time.</p>
-      
-      <iframe data-tally-src="https://tally.so/embed/ODRyY7?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="450" frameborder="0" marginheight="0" marginwidth="0" title="Client Consent"></iframe>
-    </div>
-
-    <!-- OPTION 2: RETURNING CLIENTS -->
-    <div>
-      <h3 style="font-size: 18px; margin-bottom: 10px; color: var(--parchment);">Returning Client</h3>
-      <p style="font-size: 14px; color: var(--parchment-dim); margin-bottom: 15px;">Already signed your consent form? Skip straight to booking.</p>
-      <a href="YOUR_CALENDLY_LINK_HERE" class="btn-link">Book My Time Slot</a>
-    </div>
+    <a href="YOUR_CALENDLY_LINK_HERE" class="btn-link" target="_blank">Book My Cut Now</a>
 
     <!-- CONFIRMATION SCREEN (POPS UP AFTER STRIPE PAYMENT) -->
     <div class="confirm" id="bookingConfirm" style="margin-top: 30px;">
@@ -134,8 +122,8 @@
     <div class="plan-row"><div class="top"><div class="name">Monthly Membership <span style="font-size:11px;color:var(--parchment-dim);">(1 cut/month)</span></div><div class="amount">−$5</div></div><div class="save">$5 off every cut, every visit</div></div>
     <div class="plan-row"><div class="top"><div class="name">Bi-Weekly Membership</div><div class="amount">−$10</div></div><div class="save">$10 off every cut, every visit</div></div>
 
-    <div style="margin-top:22px;" class="booking-cta">
-      <p>Tap below to sign up for a membership. We'll reach out to set up your first appointment.</p>
+    <div style="margin-top:22px;">
+      <p style="font-size: 14px; color: var(--parchment-dim); margin-bottom: 15px; text-align: center;">Tap below to sign up for a membership. We'll reach out to set up your first appointment.</p>
       <a href="https://tally.so/r/ODRyY7" class="btn-link">Join Membership</a>
     </div>
   </div>
@@ -149,7 +137,7 @@
     </div>
     <div class="event-row">
       <div class="event-date">NOV<br>05</div>
-      <div class="event-info"><h3>Worcester Barber Expo</h3><p>DCU Center · All day</p></div>
+      <div class="event-info"><h3>Massachusetts Barber Expo</h3><p>DCU Center · All day</p></div>
     </div>
   </div>
 
@@ -171,9 +159,8 @@
   window.addEventListener('DOMContentLoaded', function(){
     const params = new URLSearchParams(window.location.search);
     if (params.get('paid') === 'booking') {
-      document.getElementById('bookingLaunch').style.display = 'none';
-      document.getElementById('bookingConfirm').classList.add('active');
       document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('bookingConfirm').classList.add('active');
       history.replaceState(null, '', window.location.pathname);
     }
   });
